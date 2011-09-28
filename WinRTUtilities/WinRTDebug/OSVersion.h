@@ -3,12 +3,7 @@
 // 
 // Check the OS Version
 
-
 #include "stdafx.h"
-using namespace ATL;
-
-#include <string>
-using namespace std;
 
 class OSVersion
 {
@@ -24,6 +19,7 @@ private:
 		*major = version.dwMajorVersion;
 		*minor = version.dwMinorVersion;
 	}
+
 public:
 	static bool OSVersion::IsWindows8()
 	{

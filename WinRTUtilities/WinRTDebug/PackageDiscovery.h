@@ -4,23 +4,23 @@
 // Get the full names for all the installed packages from the registry
 
 #include "stdafx.h"
-using namespace ATL;
 
 #include <string>
 #include <vector>
 #include <algorithm>
-using namespace std;
 
 
 class PackageDiscovery
 {
 private:
 public:
-	static vector<wstring> PackageDiscovery::GetPackages()
+	static std::vector<std::wstring> PackageDiscovery::GetPackages()
 	{
+		using namespace std;
+
 		vector<wstring> list;
 		LPCTSTR regKey = L"Software\\Classes\\ActivatableClasses\\Package";
-		CRegKey reg;
+		ATL::CRegKey reg;
 		if(reg.Open(HKEY_CURRENT_USER, regKey) != ERROR_SUCCESS)
 			return list;
 		int i = 0;

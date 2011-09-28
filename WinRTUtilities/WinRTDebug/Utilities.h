@@ -9,7 +9,6 @@
 #include <sstream>
 #include <vector>
 #include <algorithm>
-using namespace std;
 
 #define szTokens (L"-/")
 
@@ -28,9 +27,11 @@ typedef enum COMMANDLINECHOICE_Type
 struct ActionRequested
 {
 	COMMANDLINECHOICE Choice;
-	vector<wstring> Parameters;
-	wstring ToString()
+	std::vector<std::wstring> Parameters;
+	std::wstring ToString()
 	{
+		using namespace std;
+
 		wstringstream ss;
 		switch(Choice)
 		{
@@ -89,6 +90,8 @@ public:
 
 	static void Utilities::PrintCopyright()
 	{
+		using namespace std;
+
 		wstringstream ss;
 		ss << L"WinRTDebug v1.0 by Raffaele Rialdi, 2011 - http://www.iamraf.net" << endl;
 		ss << L"Project repository: http://WinRT.codeplex.com" << endl;
@@ -100,6 +103,8 @@ public:
 
 	static void Utilities::PrintUsage()
 	{
+		using namespace std;
+
 		wstringstream ss;
 		ss << L"-v ";
 		ss << L"   list full names of all the packages" << endl;
