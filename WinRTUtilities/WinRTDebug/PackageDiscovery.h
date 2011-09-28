@@ -29,7 +29,7 @@ public:
 		LONG ret;
 		do
 		{
-			len = sizeof(buffer);
+			len = _countof(buffer);
 			ret = reg.EnumKey(i++, buffer, &len);
 			if(ret != ERROR_SUCCESS && ret != ERROR_NO_MORE_ITEMS)
 				return list;
