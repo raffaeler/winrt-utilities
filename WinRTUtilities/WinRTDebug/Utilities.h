@@ -88,12 +88,13 @@ private:
 
 public:
 
+
 	static void Utilities::PrintCopyright()
 	{
 		using namespace std;
 
 		wstringstream ss;
-		ss << L"WinRTDebug v1.0 by Raffaele Rialdi, 2011 - http://www.iamraf.net" << endl;
+		ss << L"WinRTDebug v1.1 by Raffaele Rialdi, 2011 - http://www.iamraf.net" << endl;
 		ss << L"Project repository: http://WinRT.codeplex.com" << endl;
 		ss << L"This utility enable debugging the activation of WinRT Metro applications" << endl;
 		//ss << L"Windows 8 or greater required" << endl;
@@ -128,9 +129,43 @@ public:
 		ss << L"   Set the target session id" << endl;
 
 		ss << L"package name must be full (see -v)" << endl;
+		ss << L"instead of package name, you can write $n where n is the index (see -v output)" << endl;
 		ss << L"debugger path must be the full qualified path name" << endl;
 		wcout << ss.str();
 	}
+
+	static std::wstring GetMessageForHResult(HRESULT hr)
+	{
+		HRESULT hrLocal;
+		std::wstring message;
+		WORD facility = HRESULT_FACILITY(hr);
+		CComPtr<IErrorInfo> spErrorInfo;
+		hrLocal = GetErrorInfo(0, &spErrorInfo);
+		if(hrLocal == S_OK && spErrorInfo != NULL)
+		{
+			BSTR description;
+			hrLocal = spErrorInfo->GetDescription(&description);
+			message.append((LPWSTR)description);
+			SysFreeString(description);
+		}
+		else if(facility == FACILITY_ITF)
+		{
+			message.append(L"Custom error: ");
+			std::wstringstream ss;
+			ss << L"0x" << std::hex << hr << std::dec;
+			message.append(ss.str());
+		}
+		else
+		{
+			LPWSTR pMsg;
+			FormatMessage(FORMAT_MESSAGE_ALLOCATE_BUFFER | FORMAT_MESSAGE_FROM_SYSTEM | FORMAT_MESSAGE_IGNORE_INSERTS,
+				NULL, (DWORD)hr, MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT), (LPWSTR)&pMsg, 0, NULL);
+			message.append(pMsg);
+			LocalFree((LPVOID)pMsg);
+		}
+		return message;
+	}
+
 
 	static ActionRequested Utilities::GetCommandLineChoice()
 	{
@@ -165,7 +200,23 @@ public:
 
 		while(i < argc - 1)
 		{
-			res.Parameters.push_back(argvW[i++]);
+			std::wstring par(argvW[i++]);
+			if(par.size() > 1 && par.at(0) == L'$')
+			{
+				DWORD idx = 0;
+				auto ss = std::wstringstream(par.substr(1));
+				ss >> idx;
+				if(!ss.fail())
+				{
+					auto packages = PackageDiscovery::GetPackages();
+					if(idx >= 0 && idx < packages.size())
+					{
+						res.Parameters.push_back(packages.at(idx));
+						continue;
+					}
+				}
+			}
+			res.Parameters.push_back(par);
 		}
 		return res;
 	}

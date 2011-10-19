@@ -39,11 +39,13 @@ private:
 public:
 	ShellPackage()
 	{
+		_lastHRESULT = S_OK;
 	}
 
 	ShellPackage(const std::wstring& packageFullName)
 	{
 		_packageFullName = packageFullName;
+		_lastHRESULT = S_OK;
 	}
 
 	HRESULT GetLastHRESULT()
@@ -54,6 +56,7 @@ public:
 	void EnableDebugging(const std::wstring& debuggerFullName, PZZWSTR pEnvironment = NULL)
 	{
 		EXIT_IF_INVALID
+		_lastHRESULT = S_OK;
 		ATL::CComQIPtr<IPackageDebugSettings> sp = CreatePackageDebugSettings();
 		if(sp == NULL) return;
 		_lastHRESULT = sp->EnableDebugging(_packageFullName.c_str(), debuggerFullName.c_str(), pEnvironment);
@@ -62,6 +65,7 @@ public:
 	void DisableDebugging()
 	{
 		EXIT_IF_INVALID
+		_lastHRESULT = S_OK;
 		ATL::CComQIPtr<IPackageDebugSettings> sp = CreatePackageDebugSettings();
 		if(sp == NULL) return;
 		_lastHRESULT = sp->DisableDebugging(_packageFullName.c_str());
@@ -71,6 +75,7 @@ public:
 	{
 		EXIT_IF_INVALID
 		ATL::CComQIPtr<IPackageDebugSettings> sp = CreatePackageDebugSettings();
+		_lastHRESULT = S_OK;
 		if(sp == NULL) return;
 		_lastHRESULT = sp->Suspend(_packageFullName.c_str());
 	}
@@ -78,6 +83,7 @@ public:
 	void Resume()
 	{
 		EXIT_IF_INVALID
+		_lastHRESULT = S_OK;
 		ATL::CComQIPtr<IPackageDebugSettings> sp = CreatePackageDebugSettings();
 		if(sp == NULL) return;
 		_lastHRESULT = sp->Resume(_packageFullName.c_str());
@@ -86,6 +92,7 @@ public:
 	void TerminateAllProcesses()
 	{
 		EXIT_IF_INVALID
+		_lastHRESULT = S_OK;
 		ATL::CComQIPtr<IPackageDebugSettings> sp = CreatePackageDebugSettings();
 		if(sp == NULL) return;
 		_lastHRESULT = sp->TerminateAllProcesses(_packageFullName.c_str());
@@ -94,6 +101,7 @@ public:
 	void SetTargetSessionId(ULONG id)
 	{
 		ATL::CComQIPtr<IPackageDebugSettings> sp = CreatePackageDebugSettings();
+		_lastHRESULT = S_OK;
 		if(sp == NULL) return;
 		_lastHRESULT = sp->SetTargetSessionId(id);
 	}

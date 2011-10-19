@@ -20,8 +20,9 @@ struct _init
 void ListPackages()
 {
 	auto packages = PackageDiscovery::GetPackages();
-	for_each(begin(packages), end(packages), [] (const wstring& package) {
-		wcout << package << endl;
+	int i = 0;
+	for_each(begin(packages), end(packages), [&i] (const wstring& package) {
+		wcout << i++ << L"> " << package << endl;
 	});
 }
 
@@ -81,6 +82,7 @@ HRESULT ProcessShellPackage(ActionRequested action)
 	return res;
 }
 
+
 int wmain(int argc, wchar_t* argv[])
 {
 	Utilities::PrintCopyright();
@@ -97,6 +99,7 @@ int wmain(int argc, wchar_t* argv[])
 	switch(action.Choice)
 	{
 	case List:
+		wcout << L"The starting number is the index to specify in the other commands" << endl;
 		ListPackages();
 		return 0;
 
@@ -108,10 +111,25 @@ int wmain(int argc, wchar_t* argv[])
 	case Terminate:
 	case SessionId:
 		res = ProcessShellPackage(action);
-		if(res == 0) return res;
+		break;
+
+	default:
+		Utilities::PrintUsage();
+		break;
 	}
 
-	Utilities::PrintUsage();
+	wcout << endl;
+
+	if(res == S_OK)
+	{
+		wcout << L"Command executed successfully" << endl;
+	}
+	else
+	{
+		auto msg = Utilities::GetMessageForHResult(res);
+		wcout << L"Error: " << endl << msg.c_str();
+	}
+
 	return res;
 }
 
